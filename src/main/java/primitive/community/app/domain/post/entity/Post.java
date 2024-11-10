@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
+import primitive.community.app.domain.category.entity.Category;
 import primitive.community.app.domain.member.entity.Member;
 
 @Entity
@@ -31,13 +32,14 @@ public class Post {
     @Comment("멤버")
     private Member member;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    @Comment("카테고리")
+    private Category category;
+
     @Column(nullable = false)
     @Comment("제목")
     private String title;
-
-    @Column(nullable = false)
-    @Comment("카테고리")
-    private String category;
 
     @Comment("내용")
     private String content;
