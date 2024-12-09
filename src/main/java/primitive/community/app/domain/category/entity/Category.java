@@ -28,4 +28,12 @@ public class Category {
     @Column(nullable = false)
     @Comment("이름")
     private String name;
+
+    @Column(nullable = false)
+    @Comment("계층")
+    private int depth;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "upperCategoryId")
+    private Category name;
 }
