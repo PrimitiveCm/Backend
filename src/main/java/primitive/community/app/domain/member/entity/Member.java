@@ -20,9 +20,9 @@ public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
-    @Column(nullable = false)
+    /*@Column(nullable = false)
     @Comment("로그인 아이디")
-    private String loginId;
+    private String loginId;*/
 
     @Column(nullable = false)
     @Comment("비밀번호")

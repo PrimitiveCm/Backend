@@ -34,7 +34,6 @@ dependencies {
 
 	// Spring Security 관련 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.security:spring-security-config:5.7.0'
    //	implementation 'javax.servlet:javax.servlet-api:4.0.1'
 
 	// JWT 처리

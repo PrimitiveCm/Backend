@@ -1,74 +1,73 @@
 package primitive.community.app.security;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
-import primitive.community.app.domain.role.Role;
 
 import java.util.Base64;
 import java.util.Date;
 
-@RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
 
-    private String secretKey = "test";
+    private static final String SECRET_KEY = "your-256-bit-long-secret-key-here";
+    private static final String BASE64_ENCODED_SECRET_KEY = Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());  // Base64로 인코딩된 키
+    private static final long EXPIRATION_TIME = 86400000; // 1일 (밀리초 단위)
 
-    // 토큰 유효시간 30분
-    private long tokenValidTime = 30 * 60 * 1000L;
-
-    private final UserDetailsService userDetailsService;
-
-    // 객체 초기화, secretKey를 Base64로 인코딩
-    protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
-    }
-
-    // JWT 토큰 생성
-    public String createToken(String userPK, Role roles) {
-        Claims claims = Jwts.claims().setSubject(userPK); // JWT payload에 저장되는 정보 단위
-        claims.put("roles", roles); // 정보 저장 (key-value)
+    // 토큰 생성
+    public String createToken(String studentNumber) {
+        /*Claims claims = Jwts.claims().setSubject(studentNumber);
         Date now = new Date();
+        Date validity = new Date(now.getTime() + EXPIRATION_TIME);
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
-                .signWith(SignatureAlgorithm.HS256, secretKey) // 사용할 암호화 알고리즘과 signature에 들어갈 secret 값 세팅
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();*/
+
+        Claims claims = Jwts.claims().setSubject(studentNumber);
+        Date now = new Date();
+
+        String token = Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS256, BASE64_ENCODED_SECRET_KEY)
                 .compact();
+        return token;
     }
 
-    // JWT 토큰에서 인증 정보 조회
-    public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPK(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    }
-
-    // 토큰에서 회원 정보 추출
-    public String getUserPK(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
-    }
-
-    // Request의 Header에서 token 값을 가져옵니다. "X-AUTH-TOKEN": "TOKEN 값"
-    public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("X-AUTH-TOKEN");
-    }
-
-    // 토큰의 유효성 + 만료일자 확인
-    public boolean validateToken(String jwtToken) {
+    // 토큰 검증
+    public static boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-            return !claims.getBody().getExpiration().before(new Date());
+            Jwts.parserBuilder()
+                    .setSigningKey(BASE64_ENCODED_SECRET_KEY)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return false;
         }
     }
 
+    // 토큰에서 사용자 이름 추출
+    public static String getUsernameFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(BASE64_ENCODED_SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    public String getStudentNumber(String token) {
+        return Jwts.parser()
+                .setSigningKey(BASE64_ENCODED_SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
 }
