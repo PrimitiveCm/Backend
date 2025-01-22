@@ -1,5 +1,6 @@
 package primitive.community.app.domain.category.dto;
 
+import java.util.Optional;
 import lombok.Data;
 import primitive.community.app.domain.category.entity.Category;
 
@@ -11,12 +12,13 @@ public class CategoryDto {
     private Long upperCategoryId;
 
     public static CategoryDto of(Category category) {
-        this.id = category.getCategoryId();
-        this.name = category.getName();
-        this.depth = category.getDepth();
-        this.upperCategoryId = category.getUpperCategory().getCategoryId();
+        CategoryDto categoryDto = new CategoryDto();
 
-        return this;
+        categoryDto.setId(category.getCategoryId());
+        categoryDto.setName(category.getName());
+        categoryDto.setDepth(category.getDepth());
+        categoryDto.setUpperCategoryId(category.getUpperCategory() == null ? null : category.getUpperCategory().getCategoryId());
+
+        return categoryDto;
     }
-
 }
