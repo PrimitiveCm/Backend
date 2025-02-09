@@ -1,20 +1,21 @@
-package primitive.community.app.domain.post.entity;
+package primitive.community.app.domain.category.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
-import primitive.community.app.domain.category.entity.Category;
-import primitive.community.app.domain.member.entity.Member;
+import org.hibernate.annotations.Fetch;
 
 @Entity
 @Getter
@@ -22,25 +23,21 @@ import primitive.community.app.domain.member.entity.Member;
 @NoArgsConstructor
 @SuperBuilder
 @ToString
-public class Post {
+@Table(name = "category")
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
-
-    @ManyToOne
-    @JoinColumn(name="member_id", nullable=false)
-    @Comment("멤버")
-    private Member member;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    @Comment("카테고리")
-    private Category category;
+    private Long categoryId;
 
     @Column(nullable = false)
-    @Comment("제목")
-    private String title;
+    @Comment("이름")
+    private String name;
 
-    @Comment("내용")
-    private String content;
+    @Column(nullable = false)
+    @Comment("계층")
+    private int depth;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "upperCategoryId")
+    private Category upperCategory;
 }
