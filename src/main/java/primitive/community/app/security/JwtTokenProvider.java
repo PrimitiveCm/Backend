@@ -70,4 +70,14 @@ public class JwtTokenProvider {
                 .getBody()
                 .getSubject();
     }
+
+    public Claims extractClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(BASE64_ENCODED_SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+    private boolean isTokenExpired(String token) {
+        return extractClaims(token).getExpiration().before(new Date());
+    }
 }

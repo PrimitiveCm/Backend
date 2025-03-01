@@ -46,4 +46,7 @@ public class MemberService {
     public Optional<Member> findMemberByStudentNumber(String studentNumber) {
         return memberRepository.findByStudentNumber(studentNumber);
     }
+
+
+
 }
