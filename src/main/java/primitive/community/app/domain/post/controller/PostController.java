@@ -4,23 +4,23 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import primitive.community.app.domain.category.dto.CategoryDto;
 import primitive.community.app.domain.post.dto.PostDto;
 import primitive.community.app.domain.post.service.PostService;
+import primitive.community.app.security.principal.MemberPrincipal;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/posts")
+@RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto, Long memeberId) {
-        return new ResponseEntity<>(postService.createPost(postDto, memeberId), HttpStatus.OK);
+    private ResponseEntity<PostDto> createPost (@RequestBody PostDto post, @AuthenticationPrincipal MemberPrincipal member) {
+        return new ResponseEntity<>(postService.createPost(post, member), HttpStatus.OK);
     }
 }

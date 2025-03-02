@@ -15,6 +15,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
 import primitive.community.app.domain.category.entity.Category;
 import primitive.community.app.domain.member.entity.Member;
+import primitive.community.app.domain.post.dto.PostDto;
 
 @Entity
 @Getter
@@ -43,4 +44,11 @@ public class Post {
 
     @Comment("내용")
     private String content;
+
+    public Post(Member member, Category category, String title, String content) {
+        this.member = member;
+        this.category = category;
+        this.title = title;
+        this.content = content;
+    }
 }
