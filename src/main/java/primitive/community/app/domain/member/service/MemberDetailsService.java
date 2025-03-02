@@ -1,5 +1,6 @@
 package primitive.community.app.domain.member.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,11 +12,9 @@ import primitive.community.app.security.principal.MemberPrincipal;
 @Service
 public class MemberDetailsService implements UserDetailsService {
 
-    private final MemberRepository memberRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
-    public MemberDetailsService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String studentNumber) throws UsernameNotFoundException {
