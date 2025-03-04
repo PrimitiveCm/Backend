@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import primitive.community.app.domain.category.entity.Category;
 import primitive.community.app.domain.category.repository.CategoryRepository;
 import primitive.community.app.domain.member.entity.Member;
@@ -16,6 +17,7 @@ import primitive.community.app.security.principal.MemberPrincipal;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PostService {
     private final PostRepository postRepository;
     private final CategoryRepository categoryRepository;
@@ -29,13 +31,23 @@ public class PostService {
         return post;
     }
 
+    @Transactional(readOnly = true)
     public List<PostGetListDto> getPostList(Long categoryId) {
         List<PostGetListDto> foundPostList = postRepository.findByCategory_CategoryId(categoryId);
         return foundPostList;
     }
 
+    @Transactional(readOnly = true)
     public PostDto getPost(Long postId) {
         Post targetPost = postRepository.findById(postId).orElseThrow();
         return PostDto.of(targetPost);
+    }
+
+    public PostDto updatePost(PostDto postDto) {
+        Post targetPost = postRepository.findById(postDto.getPostId()).orElseThrow();
+        Category category = categoryRepository.findById(postDto.getCategoryId()).orElseThrow();
+
+        targetPost.updatePost(postDto.getTitle(), postDto.getContent(),category);
+        return postDto;
     }
 }
