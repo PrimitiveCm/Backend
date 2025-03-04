@@ -51,4 +51,10 @@ public class Post {
         this.title = title;
         this.content = content;
     }
+
+    public void updatePost(String title, String content, Category category) {
+        this.title = title;
+        this.content = content;
+        this.category = category;
+    }
 }
