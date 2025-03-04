@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,5 +44,10 @@ public class PostController {
     @PutMapping
     public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto) {
         return new ResponseEntity<>(postService.updatePost(postDto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Long> deletePost (@PathVariable Long postId) {
+        return new ResponseEntity<>(postService.deletePost(postId), HttpStatus.OK);
     }
 }
