@@ -29,7 +29,7 @@ public class Post {
     private Long postId;
 
     @ManyToOne
-    @JoinColumn(name="member_id", nullable=false)
+    @JoinColumn(name="member_id", nullable = false)
     @Comment("멤버")
     private Member member;
 
