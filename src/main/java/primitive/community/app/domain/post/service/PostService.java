@@ -50,4 +50,9 @@ public class PostService {
         targetPost.updatePost(postDto.getTitle(), postDto.getContent(),category);
         return postDto;
     }
+
+    public Long deletePost(Long postId) {
+        postRepository.deleteById(postId);
+        return postId;
+    }
 }
