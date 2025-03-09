@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
-import org.hibernate.annotations.Fetch;
+import primitive.community.app.domain.category.dto.CategoryDto;
 
 @Entity
 @Getter
@@ -40,6 +40,12 @@ public class Category {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "upperCategoryId")
     private Category upperCategory;
+
+    public Category(String name, int depth, Category upperCategory) {
+        this.name = name;
+        this.depth = depth;
+        this.upperCategory = upperCategory;
+    }
 
     public void updateCategory(String categoryName, int depth, Category upperCategory) {
         this.name = categoryName;

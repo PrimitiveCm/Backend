@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import primitive.community.app.domain.category.dto.CategoryDto;
 import primitive.community.app.domain.category.entity.Category;
 import primitive.community.app.domain.category.repository.CategoryRepository;
+import primitive.community.app.security.principal.MemberPrincipal;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,21 @@ public class CategoryService {
         }
 
         return categoryDtoList;
+    }
+
+    public Long createCategory(CategoryDto categoryDto) {
+        Category upperCategory = null;
+        int depth = 1;
+
+        if(categoryDto.getUpperCategoryId() != null) {
+            upperCategory = categoryRepository.findById(categoryDto.getUpperCategoryId()).orElseThrow();
+            depth = upperCategory.getDepth() + 1;
+        }
+
+        Category newCategory = new Category(categoryDto.getName(), depth, upperCategory);
+        Category savedCategory = categoryRepository.save(newCategory);
+
+        return savedCategory.getCategoryId();
     }
 
     public CategoryDto updateCategory(CategoryDto categoryDto) {
