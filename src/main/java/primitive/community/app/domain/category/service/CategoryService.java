@@ -35,4 +35,9 @@ public class CategoryService {
         targetCategory.updateCategory(categoryDto.getName(), categoryDto.getDepth(), upperCategory);
         return categoryDto;
     }
+
+    public Long deleteCategory(Long categoryId) {
+        categoryRepository.deleteById(categoryId);
+        return categoryId;
+    }
 }
