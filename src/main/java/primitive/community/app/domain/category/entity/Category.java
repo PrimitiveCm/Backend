@@ -40,4 +40,10 @@ public class Category {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "upperCategoryId")
     private Category upperCategory;
+
+    public void updateCategory(String categoryName, int depth, Category upperCategory) {
+        this.name = categoryName;
+        this.depth = depth;
+        this.upperCategory = upperCategory;
+    }
 }

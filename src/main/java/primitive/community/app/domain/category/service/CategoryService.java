@@ -1,6 +1,6 @@
 package primitive.community.app.domain.category.service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +15,7 @@ import primitive.community.app.domain.category.repository.CategoryRepository;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
+    @Transactional(readOnly = true)
     public List<CategoryDto> findCategoryList() {
         List<Category> categoryList = categoryRepository.findAll();
         List<CategoryDto> categoryDtoList = new ArrayList<>();
@@ -24,5 +25,14 @@ public class CategoryService {
         }
 
         return categoryDtoList;
+    }
+
+    public CategoryDto updateCategory(CategoryDto categoryDto) {
+        Category targetCategory = categoryRepository.findById(categoryDto.getId()).orElseThrow();
+        Category upperCategory = (categoryDto.getUpperCategoryId() != null) ?
+            categoryRepository.findById(categoryDto.getUpperCategoryId()).orElse(null) : null;
+
+        targetCategory.updateCategory(categoryDto.getName(), categoryDto.getDepth(), upperCategory);
+        return categoryDto;
     }
 }
