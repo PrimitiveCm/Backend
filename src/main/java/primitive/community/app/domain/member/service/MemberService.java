@@ -8,9 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 import primitive.community.app.domain.member.dto.MemberDto;
 import primitive.community.app.domain.member.entity.Member;
 import primitive.community.app.domain.member.repository.MemberRepository;
+import primitive.community.app.domain.role.RoleType;
 import primitive.community.app.security.JwtTokenProvider;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,16 +40,35 @@ public class MemberService {
         member.setStudentNumber(memberDto.getStudentNumber());
         member.setUserName(memberDto.getUserName());
         member.setPassword(encodedPassword);
+        member.setRoleType(RoleType.GUEST.toString());
         memberRepository.save(member);
 
         return jwtTokenProvider.createToken(member.getStudentNumber());
     }
 
     @Transactional(readOnly = true)
-    public Optional<Member> findMemberByStudentNumber(String studentNumber) {
-        return memberRepository.findByStudentNumber(studentNumber);
+    public Member findMemberByStudentNumber(String studentNumber) {
+        return memberRepository.findByStudentNumber(studentNumber).orElseThrow(() -> new RuntimeException("없음"));
     }
 
+    @Transactional
+    public void approveNewMember(Member member) {
+        member.setRoleType(RoleType.USER.toString());
+        memberRepository.save(member);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberDto> findApproveMemberList() {
+
+        return memberRepository.findByRoleType(RoleType.GUEST.toString())
+                .stream()
+                .map(member -> MemberDto.builder()
+                        .studentNumber(member.getStudentNumber())
+                        .userName(member.getUserName())
+                        .build()
+                )
+                .collect(Collectors.toList());
 
 
+    }
 }

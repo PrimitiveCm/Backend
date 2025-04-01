@@ -24,8 +24,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/members/register").permitAll() // 회원가입은 인증 없이 접근 허용
-                        .requestMatchers("/api/members/login").permitAll() // 회원가입은 인증 없이 접근 허용
+                        .requestMatchers("/members/register").permitAll() // 회원가입은 인증 없이 접근 허용
+                        .requestMatchers("/members/login").permitAll() // 회원가입은 인증 없이 접근 허용
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // JWT 인증 필터 추가

@@ -18,12 +18,12 @@ import primitive.community.app.domain.member.dto.MemberDto;
 import primitive.community.app.domain.member.entity.Member;
 import primitive.community.app.domain.member.repository.MemberRepository;
 import primitive.community.app.domain.member.service.MemberService;
+import primitive.community.app.domain.role.RoleType;
 import primitive.community.app.security.JwtAuthenticationFilter;
 import primitive.community.app.security.JwtTokenProvider;
 import primitive.community.app.security.principal.MemberPrincipal;
 
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 
 @RestController
@@ -121,14 +121,55 @@ public class MemberController {
     // 학번으로 회원 조회
     @GetMapping("/{studentNumber}")
     public ResponseEntity<Member> getMemberByStudentNumber(@PathVariable String studentNumber) {
-        Optional<Member> member = memberService.findMemberByStudentNumber(studentNumber);
-        return member.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        Member member = memberService.findMemberByStudentNumber(studentNumber);
+        return ResponseEntity.status(HttpStatus.OK).body(member);
     }
 
     @GetMapping("/info")
     public String getMemberInfo(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
         System.out.println(memberPrincipal.getUsername().toString());
         return "ok";
+    }
+
+
+    @PostMapping("/approve/{memberId}")
+    public ResponseEntity<String> logout(@PathVariable String memberId, @AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        try {
+            logger.info("memberId : " + memberId);
+            logger.info("memberPrincipal : " + memberPrincipal.getMember().toString());
+
+            String roleType = memberPrincipal.getMember().getRoleType();
+            if (!roleType.equals(RoleType.ADMIN.toString())) {
+                throw new RuntimeException("해당 회원은 어드민이 아닙니다.");
+            }
+            Member approveMember = memberService.findMemberByStudentNumber(memberId);
+            if (!approveMember.getRoleType().equals(RoleType.GUEST.toString())) {
+                throw new RuntimeException("해당 회원은 손님이 아닙니다.");
+            }
+            memberService.approveNewMember(approveMember);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body("ok");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/approve/list")
+    public ResponseEntity<?>  approveList(@AuthenticationPrincipal MemberPrincipal memberPrincipal) {
+        try {
+            logger.info("memberPrincipal : " + memberPrincipal.getMember().toString());
+            String roleType = memberPrincipal.getMember().getRoleType();
+            if (!roleType.equals(RoleType.ADMIN.toString())) {
+                throw new RuntimeException("해당 회원은 어드민이 아닙니다.");
+            }
+            List<MemberDto> approveMemberList = memberService.findApproveMemberList();
+            return ResponseEntity.status(HttpStatus.CREATED).body(approveMemberList);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "처리 중 오류가 발생했습니다. 관리자에게 문의하세요.");
+            errorResponse.put("details", e.getMessage());  // 예외 메시지 추가
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
     }
 }

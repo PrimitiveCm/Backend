@@ -20,10 +20,6 @@ public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
-    /*@Column(nullable = false)
-    @Comment("로그인 아이디")
-    private String loginId;*/
-
     @Column(nullable = false)
     @Comment("비밀번호")
     private String password;
@@ -42,4 +38,15 @@ public class Member {
     @Column(nullable = false)
     @Comment("상태")
     private boolean status;
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "memberId=" + memberId +
+                ", userName='" + userName + '\'' +
+                ", studentNumber='" + studentNumber + '\'' +
+                ", roleType='" + roleType + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }
